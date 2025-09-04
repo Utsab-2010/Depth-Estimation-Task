@@ -124,8 +124,8 @@ class MobileNetV2(nn.Module):
             x = stage(x)
             features.append(x)
         x = self.conv(x)
-        x = self.avgpool(x).reshape(x.size(0), -1)
-        x = self.classifier(x)
+        # x = self.avgpool(x).reshape(x.size(0), -1)
+        # x = self.classifier(x)
         return x, features
     
     def _initialize_weights(self):
