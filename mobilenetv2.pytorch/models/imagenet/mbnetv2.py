@@ -123,7 +123,7 @@ class MobileNetV2(nn.Module):
         for stage in self.bottleneck_sequential_blocks:
             x = stage(x)
             features.append(x)
-        x = self.conv(x)
+        # x = self.conv(x)
         # x = self.avgpool(x).reshape(x.size(0), -1)
         # x = self.classifier(x)
         return x, features
