@@ -1,3 +1,22 @@
 # Depth-Estimation-Task
+This project is my implementation of a Lightweight Depth Estimation Model from scratch in Pytorch following the architecture provided this [ICLR paper](https://ieeexplore.ieee.org/document/9411998).
 
-- Download the dataset from [here](https://www.kaggle.com/datasets/soumikrakshit/nyu-depth-v2)
+It using the frozen MobileNetV2 encoder and trains a Decoder composed of Inverted Bottleneck Blocks from the MobileNetV2 network. A U-net style architecture is followed. 
+
+### Datasets and Training:
+- Training was done on an HP-Omen Laptop with RTX 4060 GPU.
+- Due to limited compute resources I am using low-resolution version of the KITTI and CityScapes dataset.
+- Download the datasets:
+    - [KITTI](https://www.kaggle.com/datasets/utsabkaran/kitti-data)
+    - [CityScapes](https://www.kaggle.com/datasets/sakshaymahna/cityscapes-depth-and-segmentation)
+
+### Training Loss on KITTI
+<img src="image-1.png" width="500">
+
+### Ground Truth vs Predicted Disparity
+![alt text](image.png)
+
+## TO-DOs:
+ - Improve accuracy and segmentation.
+ - Compare with benchmark models like MonoDepth2
+ - Try which different loss functions to reduce noise and smoothen output.
