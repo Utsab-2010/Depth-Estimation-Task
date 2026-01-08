@@ -19,6 +19,8 @@ It's using the frozen [MobileNetV2](https://github.com/d-li14/mobilenetv2.pytorc
 <img src="images/results.png" width="750">
 
 ## TO-DOs:
+- Make the Dataloading modular(create different Loading classes for each of dataset and mention the format needed)
+- create scripts for the classes and functions. Keep Notebooks at just the testbeds.
  - Improve accuracy and segmentation.
  - Compare with benchmark models like MonoDepth2
  - Try which different loss functions to reduce noise and smoothen output.
