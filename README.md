@@ -18,6 +18,63 @@ It's using the frozen [MobileNetV2](https://github.com/d-li14/mobilenetv2.pytorc
 ### Ground Truth vs Predicted Disparity
 <img src="images/results.png" width="750">
 
+---
+
+## Repository Structure
+
+```
+Depth-Estimation-Task/
+├── README.md                          # This file
+├── .gitignore                         # Excludes datasets/, logs/, saved_models/
+│
+├── test_kitti.ipynb                   # Main notebook – trains & evaluates the model on KITTI
+├── test_citysc.ipynb                  # Main notebook – trains & evaluates the model on Cityscapes
+│
+├── scripts/                           # Reusable Python modules
+│   ├── __init__.py                    # Package marker
+│   └── depth_benchmark.py            # DepthBenchmark class – scale-invariant depth evaluation
+│                                      #   metrics (AbsRel, RMSE, SILog, δ-thresholds,
+│                                      #   Spearman ρ, ordinal accuracy) with LSQ/minmax alignment
+│
+├── notebooks/                         # Older / experimental notebooks
+│   ├── test.ipynb                     # Early prototype – encoder-decoder depth model on NYU data
+│   ├── test_v2.ipynb                  # Refined iteration of test.ipynb with cleaner code
+│   ├── test_nyu.ipynb                 # MobileNetV2-based depth model trained on NYU Depth v2
+│   └── monocular-depth-estimation-nyuv2.ipynb
+│                                      # Kaggle-style notebook using segmentation_models_pytorch
+│                                      #   for monocular depth on NYU v2
+│
+├── images/                            # Figures used in the README
+│   ├── model_arc.png                  # Model architecture diagram
+│   ├── train_loss.png                 # Training loss curve plot
+│   └── results.png                    # GT vs predicted depth comparison
+│
+└── mobilenetv2/                       # MobileNetV2 encoder (forked submodule)
+    ├── imagenet.py                    # Full ImageNet training/eval script (distributed, DALI, etc.)
+    ├── LICENSE
+    ├── README.md
+    ├── models/
+    │   └── imagenet/
+    │       ├── __init__.py            # Re-exports from mobilenetv2.py
+    │       ├── mobilenetv2.py         # Standard MobileNetV2 for ImageNet classification
+    │       └── mbnetv2.py             # Modified MobileNetV2 that returns intermediate feature
+    │                                  #   maps per stage – used as the encoder backbone
+    ├── pretrained/                    # Pre-trained ImageNet weight files (.pth)
+    │   ├── mobilenetv2-c5e733a8.pth   # Default weights used by the project
+    │   └── ...                        # Various width-multiplier & resolution variants
+    └── utils/
+        ├── __init__.py                # Re-exports all utility submodules
+        ├── dataloaders.py             # ImageNet data loaders (PyTorch & NVIDIA DALI backends)
+        ├── eval.py                    # Top-k classification accuracy helper
+        ├── logger.py                  # Training metric logger (TSV files + matplotlib plots)
+        ├── misc.py                    # Helpers: dataset stats, weight init, AverageMeter, etc.
+        └── visualize.py              # Image display utils: un-normalise, heatmap colouring, overlays
+```
+
+> **Note:** `datasets/`, `logs/`, and `saved_models/` are gitignored and not tracked.
+
+---
+
 ## TO-DOs:
 - Make the Dataloading modular(create different Loading classes for each of dataset and mention the format needed)
 - create scripts for the classes and functions. Keep Notebooks at just the testbeds.
