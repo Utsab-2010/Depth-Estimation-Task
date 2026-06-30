@@ -5,14 +5,13 @@ Evaluates depth estimation quality using scale- and shift-invariant metrics,
 since monocular depth models often predict depth only up to an unknown 
 scale and shift.
 
-Both predicted and GT depths are normalised into a common [0, 1] range
-before computing error metrics.  Two alignment modes are supported:
-    - 'lsq'    : Least-squares affine fit  (pred → s·pred + t ≈ gt),
-                  then both mapped to [0, 1].  Best when scales differ a lot.
+Both predicted and GT depths are aligned or normalised before computing error metrics.
+Two modes are supported:
+    - 'lsq'    : Least-squares affine fit (pred → s·pred + t ≈ gt) to align pred to gt scale.
     - 'minmax' : Independent min-max normalisation to [0, 1].
 
 Rank-based metrics (Spearman, ordinal accuracy) are computed on the raw
-values before normalisation since they only depend on ordering.
+values before alignment/normalisation since they only depend on ordering.
 
 Metrics:
     - Scale-Invariant Log Error (SILog)
@@ -82,13 +81,12 @@ class DepthBenchmark:
     """
     Benchmark predicted depth against ground truth using relative depth metrics.
 
-    Both predicted and GT depth are normalised into a common [0, 1] range
+    Both predicted and GT depth are aligned or normalised
     before metric computation, so the results are scale- and shift-invariant.
 
-    Two normalisation modes are available (controlled by `align`):
+    Two alignment/normalisation modes are available (controlled by `align`):
         'lsq'      – Least-squares affine alignment: find (s, t) that minimise
-                      ||s * pred + t  -  gt||² over valid pixels, then normalise
-                      both aligned-pred and gt to [0, 1].  (default)
+                      ||s * pred + t  -  gt||² over valid pixels. (default)
         'minmax'   – Simply min-max normalise pred and gt independently to [0, 1].
         False/None – No alignment; only clamp to [min_depth, max_depth].
 
@@ -118,7 +116,8 @@ class DepthBenchmark:
     def _lsq_align(pred: torch.Tensor, gt: torch.Tensor):
         """
         Least-squares affine alignment: find s, t that minimise
-        ||s * pred + t - gt||², then return both on a common [0, 1] scale.
+        ||s * pred + t - gt||² over valid pixels, then return both normalised
+        to [0, 1] by dividing by the maximum value (preserving the actual minimum).
         """
         # Solve  [pred, 1] @ [s, t]^T  =  gt   in least-squares sense
         ones = torch.ones_like(pred)
@@ -136,12 +135,11 @@ class DepthBenchmark:
 
         pred_aligned = pred * params[0] + params[1]
 
-        # Now normalise both to [0, 1] using the GT range
+        # Normalise both to [0, 1] by dividing by the max value (retains actual min/max ratio)
         combined = torch.cat([pred_aligned, gt])
-        c_min, c_max = combined.min(), combined.max()
-        scale = c_max - c_min + 1e-8
+        c_max = combined.max() + 1e-8
 
-        return (pred_aligned - c_min) / scale, (gt - c_min) / scale
+        return pred_aligned / c_max, gt / c_max
 
     # ── core entry point ──────────────────────────────────────────────
 

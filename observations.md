@@ -1,0 +1,1 @@
+1. The checkboard type artifacts/patterns are due to the pixelshuffle bloks  which shuffler the channels into spatial pixels. Also a cause of blurriness. I am very unsure regarding how they dealt with this in the paper.
